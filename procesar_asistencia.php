@@ -11,6 +11,10 @@ $nombre_apellido = $_POST['nombre_apellido'];
 $id_materia = $_POST['id_materia'];
 $denominacion_materia = $_POST['denominacion_materia'];
 
+// Variable para contar asistencias guardadas
+$asistencias_guardadas = 0;
+$errores = [];
+
 // Procesa la asistencia de los estudiantes
 foreach ($_POST as $key => $value) {
     if (strpos($key, 'asistencia_') !== false) {
@@ -30,8 +34,6 @@ foreach ($_POST as $key => $value) {
             // Verifica si se encontró el estudiante
             if ($estudiante) {
                 $nombres = $estudiante['nombres'];
-
-                // Valor de la asistencia (Presente, Ausente, Tarde)
                 $tipo_asistencia = $value; 
 
                 // Guarda la asistencia en la base de datos
@@ -42,26 +44,38 @@ foreach ($_POST as $key => $value) {
                 if ($stmt_insert) {
                     $stmt_insert->bind_param('ssssssssss', $ciclo_lectivo, $carrera, $fecha, $id_docente, $nombre_apellido, $tipo_asistencia, $id_materia, $denominacion_materia, $nombres, $dni_estudiante);
 
+                    // Ejecuta la inserción
                     if ($stmt_insert->execute()) {
-                    echo "Asistencias guardadas correctamente.<br>";
-                    // Redirige después de 2 segundos a la página principal
-                    header("refresh:2; url=http://localhost/Sistema/asistencias.php");
-                    exit; // Detiene la ejecución del script
+                        $asistencias_guardadas++;
                     } else {
-                        echo "Error al guardar la asistencia para el estudiante $nombres (DNI: $dni_estudiante). Error: " . $stmt_insert->error . "<br>";
+                        $errores[] = "Error al guardar la asistencia para el estudiante $nombres (DNI: $dni_estudiante). Error: " . $stmt_insert->error;
                     }
                 } else {
-                    echo "Error al preparar la consulta de inserción. Error: " . $conn->error . "<br>";
+                    $errores[] = "Error al preparar la consulta de inserción. Error: " . $conn->error;
                 }
             } else {
-                echo "No se encontró el estudiante $nombre (DNI: $dni_estudiante).<br>";
+                $errores[] = "No se encontró el estudiante (DNI: $dni_estudiante).<br>";
             }
         } else {
-            echo "Error al preparar la consulta de selección del estudiante. Error: " . $conn->error . "<br>";
+            $errores[] = "Error al preparar la consulta de selección del estudiante. Error: " . $conn->error;
         }
     }
 }
 
 // Cierra la conexión
 $conn->close();
+
+// Muestra un solo mensaje si se guardaron asistencias
+if ($asistencias_guardadas > 0) {
+    echo "Se guardaron $asistencias_guardadas asistencias correctamente.<br>";
+}
+
+// Muestra errores, si los hay
+foreach ($errores as $error) {
+    echo $error . "<br>";
+}
+
+// Redirige a la página de asistencias después de 2 segundos
+header("refresh:2; url=http://localhost/Sistema/asistencias.php");
+exit; // Detiene la ejecución del script
 ?>

@@ -18,7 +18,6 @@
     $sql = "SELECT nombre_carrera FROM CARRERA";
     $result = $conn->query($sql);
 
-
     if ($result) {
         if ($result->num_rows > 0) {
             // Obtiene todos los datos de la consulta
@@ -36,7 +35,6 @@
     $sql = "SELECT anio FROM CURSADA";
     $result = $conn->query($sql);
 
-
     if ($result) {
         if ($result->num_rows > 0) {
 
@@ -52,9 +50,8 @@
     }
 
 
-    $sql = "SELECT denominacion_materia FROM MATERIA";
+    $sql = "SELECT id_materia, denominacion_materia FROM MATERIA";
     $result = $conn->query($sql);
-
 
     if ($result) {
         if ($result->num_rows > 0) {
@@ -71,9 +68,8 @@
     }
 
 
-    $sql = "SELECT nombre_apellido FROM DOCENTE";
+    $sql = "SELECT id_docente, nombre_apellido FROM DOCENTE";
     $result = $conn->query($sql);
-
 
     if ($result) {
         if ($result->num_rows > 0) {
@@ -93,7 +89,6 @@
     $sql = "SELECT dni_estudiante, nombres FROM ESTUDIANTES";
     $result = $conn->query($sql);
 
-
     if ($result) {
         if ($result->num_rows > 0) {
 
@@ -107,6 +102,7 @@
         $mensaje = "Error en la consulta SQL: " . $conn->error;
         $estudiante = [];
     }
+
 
     $conn->close();
     ?>
@@ -149,7 +145,7 @@
                             <select class="form-control" name="materia" id="materia" required>
                                 <option value="">Seleccione una materia</option>
                                 <?php foreach ($materias as $materia): ?>
-                                    <option value="<?= $materia['denominacion_materia']; ?>"><?= $materia['denominacion_materia']; ?></option>
+                                    <option value="<?= $materia['id_materia']; ?>"><?= $materia['denominacion_materia']; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -159,7 +155,7 @@
                             <select class="form-control" name="docente" id="profesor" required>
                                 <option value="">Seleccione un profesor</option>
                                 <?php foreach ($docentes as $docente): ?>
-                                    <option value="<?= $docente['nombre_apellido']; ?>"><?= $docente['nombre_apellido']; ?></option>
+                                    <option value="<?= $docente['id_docente']; ?>"><?= $docente['nombre_apellido']; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
