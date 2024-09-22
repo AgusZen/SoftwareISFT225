@@ -117,14 +117,12 @@
             <div class="col-9 offset-3 bg-light-subtle pt-5">
                 <div class="d-block p-3 m-4 h-100">
                     <h2 class="card-footer-text mt-2 mb-5 p-2">Asistencias</h2>
+
                     <form action="procesar_asistencia.php" method="post">
-
-
                         <div class="form-group mb-3">
                             <label for="ciclo_lectivo">Ciclo Lectivo</label>
                             <input type="text" class="form-control" id="ciclo_lectivo" name="ciclo_lectivo" required readonly>
                         </div>
-
 
                         <div class="form-group mb-3">
                             <label for="carrera">Carrera</label>
@@ -136,7 +134,6 @@
                             </select>
                         </div>
 
-
                         <div class="form-group mb-3">
                             <label for="curso">Curso</label>
                             <select class="form-control" name="curso" id="curso" required>
@@ -146,7 +143,6 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-
 
                         <div class="form-group mb-3">
                             <label for="materia">Materia</label>
@@ -158,7 +154,6 @@
                             </select>
                         </div>
 
-
                         <div class="form-group mb-3">
                             <label for="profesor">Profesor</label>
                             <select class="form-control" name="docente" id="profesor" required>
@@ -169,12 +164,16 @@
                             </select>
                         </div>
 
-
                         <div class="form-group mb-3">
                             <label for="fecha">Fecha</label>
                             <input type="date" class="form-control" id="fecha" name="fecha" required>
                         </div>
 
+                        <!-- Campos ocultos -->
+                        <input type="hidden" name="id_docente" value="<?= $id_docente; ?>">
+                        <input type="hidden" name="nombre_apellido" value="<?= $nombre_apellido; ?>">
+                        <input type="hidden" name="id_materia" value="<?= $id_materia; ?>">
+                        <input type="hidden" name="denominacion_materia" value="<?= $denominacion_materia; ?>">                     
 
                         <!-- Tabla de Estudiantes -->
                         <div class="form-group mb-3">
