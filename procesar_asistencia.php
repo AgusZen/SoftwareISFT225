@@ -31,10 +31,10 @@ foreach ($_POST as $key => $value) {
             if ($estudiante) {
                 $nombres = $estudiante['nombres'];
 
-                // El valor de la asistencia (Presente, Ausente, Tarde)
+                // Valor de la asistencia (Presente, Ausente, Tarde)
                 $tipo_asistencia = $value; 
 
-                // Guardar la asistencia en la base de datos
+                // Guarda la asistencia en la base de datos
                 $sql_insert = "INSERT INTO ASISTENCIAS (ciclo_lectivo, carrera, fecha, id_docente, nombre_apellido, tipo_asistencia, id_materia, denominacion_materia, nombres, dni_estudiante) 
                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt_insert = $conn->prepare($sql_insert);
@@ -43,7 +43,10 @@ foreach ($_POST as $key => $value) {
                     $stmt_insert->bind_param('ssssssssss', $ciclo_lectivo, $carrera, $fecha, $id_docente, $nombre_apellido, $tipo_asistencia, $id_materia, $denominacion_materia, $nombres, $dni_estudiante);
 
                     if ($stmt_insert->execute()) {
-                        echo "Asistencias guardadas correctamente.<br>";
+                    echo "Asistencias guardadas correctamente.<br>";
+                    // Redirige después de 2 segundos a la página principal
+                    header("refresh:2; url=http://localhost/Sistema/asistencias.php");
+                    exit; // Detiene la ejecución del script
                     } else {
                         echo "Error al guardar la asistencia para el estudiante $nombres (DNI: $dni_estudiante). Error: " . $stmt_insert->error . "<br>";
                     }
