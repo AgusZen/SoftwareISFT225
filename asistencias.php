@@ -9,20 +9,20 @@
 </head>
 <body>
     <?php
-    // Crear la conexión
+    // Crea la conexión
     require('./conexion.php');
     include "header.php";
 
 
-    // Consultar los datos
+    // Consulta los datos
     $sql = "SELECT nombre_carrera FROM CARRERA";
     $result = $conn->query($sql);
 
 
     if ($result) {
         if ($result->num_rows > 0) {
-            // Obtener todos los datos de la consulta
-            $carreras = $result->fetch_all(MYSQLI_ASSOC); // Obtener todos los resultados en un array asociativo
+            // Obtiene todos los datos de la consulta
+            $carreras = $result->fetch_all(MYSQLI_ASSOC); // Obtiene todos los resultados en un array asociativo
         } else {
             $mensaje = "No se encontraron registros de carreras";
             $carreras = [];
@@ -31,8 +31,6 @@
         $mensaje = "Error en la consulta SQL: " . $conn->error;
         $carreras = [];
     }
-
-
 
 
     $sql = "SELECT anio FROM CURSADA";
@@ -110,12 +108,9 @@
         $estudiante = [];
     }
 
-
     $conn->close();
     ?>
 
-
-    <main>
     <main>
         <div class="d-flex flex-nowrap sidebar-height">
             <?php include "sidebar.php"; ?>
@@ -181,7 +176,7 @@
                         </div>
 
 
-                        <!-- Tabla de Estudiantes con Presente/Ausente -->
+                        <!-- Tabla de Estudiantes -->
                         <div class="form-group mb-3">
                             <label for="estudiantes">Estudiantes</label>
                             <table class="table table-bordered">
@@ -195,11 +190,10 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tabla-estudiantes">
-                                    <!-- Aquí se cargará la tabla de estudiantes mediante JavaScript -->
+                                    <!-- Se cargan los datos de la tabla de Estudiantes a través de JavaScript -->
                                 </tbody>
                             </table>
                         </div>
-
 
                         <button type="submit" class="btn btn-primary">Registrar Asistencia</button>
                     </form>
@@ -212,9 +206,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-oP9ZBPtW4NG/O8EihkQBEI2gL3V8fEr6ioJPxB3frSSAt0tSTblZw3D6tds6dU8B" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9IbYyI2ZzyuT3iNUy0XtcmM8l9F4Y5du2vs7X6CRl2H5Yk4Z8/J" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
-
-
-
 
     <script>
             // Script para Ciclo Lectivo
@@ -234,7 +225,7 @@
         const materiaSeleccionada = this.value;
 
 
-        // Simulación de carga de estudiantes según la materia seleccionada (esto debería hacerse con una solicitud AJAX real)
+        // Simula la carga de estudiantes según la materia seleccionada (investigar solicitud AJAX real)
         const estudiantes = <?php echo json_encode($estudiante); ?>;
 
 
@@ -256,7 +247,7 @@
             cellNombre.textContent = est.nombres;
 
 
-            // Crea columna para Presente
+            // Columna Presente
             const cellPresente = document.createElement("td");
             const inputPresente = document.createElement("input");
             inputPresente.type = "checkbox";
@@ -270,7 +261,7 @@
             cellPresente.appendChild(labelPresente);
 
 
-            // Crea columna para Ausente
+            // Columna Ausente
             const cellAusente = document.createElement("td");
             const inputAusente = document.createElement("input");
             inputAusente.type = "checkbox";
@@ -284,7 +275,7 @@
             cellAusente.appendChild(labelAusente);
 
 
-            // Crea columna para Tarde
+            // Columna Tarde
             const cellTarde = document.createElement("td");
             const inputTarde = document.createElement("input");
             inputTarde.type = "checkbox";
@@ -298,7 +289,7 @@
             cellTarde.appendChild(labelTarde);
 
 
-            // Agrega un event listener para que sólo una opción sea seleccionada por estudiante
+            // "Event listener" para que sólo una opción sea seleccionada por estudiante
             inputPresente.addEventListener("change", function() {
                 if (this.checked) {
                     inputAusente.checked = false;
@@ -337,7 +328,6 @@
     });
 });
     </script>
-
 
 </body>
 </html>
