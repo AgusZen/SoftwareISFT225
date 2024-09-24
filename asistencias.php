@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ISFT 225</title>
+    <title>Asistencias</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link rel="stylesheet" href="./styles/style.css">
 </head>
@@ -116,6 +116,7 @@
 
                     <form action="procesar_asistencia.php" method="post">
                         <div class="form-group mb-3">
+                            
                             <label for="ciclo_lectivo">Ciclo Lectivo</label>
                             <input type="text" class="form-control" id="ciclo_lectivo" name="ciclo_lectivo" required readonly>
                         </div>

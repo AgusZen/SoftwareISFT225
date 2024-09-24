@@ -73,12 +73,12 @@ if ($asistencias_guardadas > 0) {
 // Muestra errores, si los hay
 foreach ($errores as $error) {
     echo $error . "<br>";
+}
 
-} else {
-
-    // Redirige a la página de asistencias después de 2 segundos
+if (empty($errores)) {
+// Redirige a la página de asistencias después de 2 segundos
 header("refresh:2; url=http://localhost/Sistema/asistencias.php");
 exit; // Detiene la ejecución del script
-
 }
+
 ?>
