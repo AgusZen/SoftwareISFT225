@@ -179,10 +179,10 @@
                             <label for="estudiantes">Estudiantes</label>
 
                         <!-- Botones para marcar todos -->
-                        <div class="mb-2">
-                            <button type="button" id="marcar-todos-presentes">Todos Presentes</button>
-                            <button type="button" id="marcar-todos-ausentes">Todos Ausentes</button>
-                            <button type="button" id="marcar-todos-tarde">Todos Tardes</button>
+                        <div class="d-flex justify-content-end mb-2" style="gap: 110px;"">
+                            <button type="button" id="marcar-todos-presentes" class="btn btn-sm rounded mx-2 btn-custom" style="color: black; border-color: black;">Presentes (T)</button>
+                            <button type="button" id="marcar-todos-ausentes" class="btn btn-sm rounded mx-2 btn-custom" style="color: black; border-color: black;">Ausentes (T)</button>
+                            <button type="button" id="marcar-todos-tarde" class="btn btn-sm rounded mx-2 btn-custom" style="color: black; border-color: black;">Tardes (T)</button>
                         </div> 
 
                             <table class="table table-bordered">
@@ -215,12 +215,12 @@
 
     <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // 1. Establecer el año actual en "Ciclo Lectivo"
+        // 1. Establece el año actual en "Ciclo Lectivo"
         const fecha = new Date();
         const year = fecha.getFullYear();
         document.getElementById("ciclo_lectivo").value = year;
 
-        // 2. Manejar el cambio de materia y cargar los estudiantes
+        // 2. Maneja el cambio de materia y cargar los estudiantes
         const selectMateria = document.getElementById("materia");
         const tablaEstudiantes = document.getElementById("tabla-estudiantes");
 
@@ -317,7 +317,7 @@
             });
         });
 
-        // 3. Funcionalidad para los botones de marcar todos
+        // 3. Funcionalidad para los botones de "marcar todos"
         // Obtener referencias a los botones
         const btnMarcarTodosPresentes = document.getElementById("marcar-todos-presentes");
         const btnMarcarTodosAusentes = document.getElementById("marcar-todos-ausentes");
@@ -363,4 +363,8 @@
             marcarTodos('tarde');
         });
     });
+
 </script>
+
+</body>
+</html>
