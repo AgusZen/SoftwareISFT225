@@ -172,9 +172,19 @@
                         <input type="hidden" name="id_materia" value="<?= $id_materia; ?>">
                         <input type="hidden" name="denominacion_materia" value="<?= $denominacion_materia; ?>">                     
 
+                 
+
                         <!-- Tabla de Estudiantes -->
                         <div class="form-group mb-3">
                             <label for="estudiantes">Estudiantes</label>
+
+                        <!-- Botones para marcar todos -->
+                        <div class="mb-2">
+                            <button type="button" id="marcar-todos-presentes">Todos Presentes</button>
+                            <button type="button" id="marcar-todos-ausentes">Todos Ausentes</button>
+                            <button type="button" id="marcar-todos-tarde">Todos Tardes</button>
+                        </div> 
+
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -204,126 +214,153 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 
     <script>
-            // Script para Ciclo Lectivo
-            document.addEventListener("DOMContentLoaded", function() {
-            const fecha = new Date();
-            const year = fecha.getFullYear();
-            document.getElementById("ciclo_lectivo").value = year;
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Establecer el año actual en "Ciclo Lectivo"
+        const fecha = new Date();
+        const year = fecha.getFullYear();
+        document.getElementById("ciclo_lectivo").value = year;
+
+        // 2. Manejar el cambio de materia y cargar los estudiantes
+        const selectMateria = document.getElementById("materia");
+        const tablaEstudiantes = document.getElementById("tabla-estudiantes");
+
+        selectMateria.addEventListener("change", function() {
+            const materiaSeleccionada = this.value;
+
+            // Simula la carga de estudiantes según la materia seleccionada
+            const estudiantes = <?php echo json_encode($estudiante); ?>;
+
+            // Limpia la tabla antes de agregar nuevos datos
+            tablaEstudiantes.innerHTML = "";
+
+            estudiantes.forEach(est => {
+                // Crea una fila para cada estudiante
+                const row = document.createElement("tr");
+
+                // Crea columnas para el DNI y Nombre
+                const cellDNI = document.createElement("td");
+                cellDNI.textContent = est.dni_estudiante;
+
+                const cellNombre = document.createElement("td");
+                cellNombre.textContent = est.nombres;
+
+                // Columna Presente
+                const cellPresente = document.createElement("td");
+                const inputPresente = document.createElement("input");
+                inputPresente.type = "checkbox";
+                inputPresente.name = `asistencia_${est.dni_estudiante}`;
+                inputPresente.value = "presente";
+                inputPresente.id = `presente_${est.dni_estudiante}`;
+                const labelPresente = document.createElement("label");
+                labelPresente.htmlFor = inputPresente.id;
+                labelPresente.textContent = "Presente";
+                cellPresente.appendChild(inputPresente);
+                cellPresente.appendChild(labelPresente);
+
+                // Columna Ausente
+                const cellAusente = document.createElement("td");
+                const inputAusente = document.createElement("input");
+                inputAusente.type = "checkbox";
+                inputAusente.name = `asistencia_${est.dni_estudiante}`;
+                inputAusente.value = "ausente";
+                inputAusente.id = `ausente_${est.dni_estudiante}`;
+                const labelAusente = document.createElement("label");
+                labelAusente.htmlFor = inputAusente.id;
+                labelAusente.textContent = "Ausente";
+                cellAusente.appendChild(inputAusente);
+                cellAusente.appendChild(labelAusente);
+
+                // Columna Tarde
+                const cellTarde = document.createElement("td");
+                const inputTarde = document.createElement("input");
+                inputTarde.type = "checkbox";
+                inputTarde.name = `asistencia_${est.dni_estudiante}`;
+                inputTarde.value = "tarde";
+                inputTarde.id = `tarde_${est.dni_estudiante}`;
+                const labelTarde = document.createElement("label");
+                labelTarde.htmlFor = inputTarde.id;
+                labelTarde.textContent = "Tarde";
+                cellTarde.appendChild(inputTarde);
+                cellTarde.appendChild(labelTarde);
+
+                // "Event listener" para que sólo una opción sea seleccionada por estudiante
+                inputPresente.addEventListener("change", function() {
+                    if (this.checked) {
+                        inputAusente.checked = false;
+                        inputTarde.checked = false;
+                    }
+                });
+
+                inputAusente.addEventListener("change", function() {
+                    if (this.checked) {
+                        inputPresente.checked = false;
+                        inputTarde.checked = false;
+                    }
+                });
+
+                inputTarde.addEventListener("change", function() {
+                    if (this.checked) {
+                        inputPresente.checked = false;
+                        inputAusente.checked = false;
+                    }
+                });
+
+                // Agrega columnas a la fila
+                row.appendChild(cellDNI);
+                row.appendChild(cellNombre);
+                row.appendChild(cellPresente);
+                row.appendChild(cellAusente);
+                row.appendChild(cellTarde);
+
+                // Agrega la fila a la tabla
+                tablaEstudiantes.appendChild(row);
+            });
         });
 
+        // 3. Funcionalidad para los botones de marcar todos
+        // Obtener referencias a los botones
+        const btnMarcarTodosPresentes = document.getElementById("marcar-todos-presentes");
+        const btnMarcarTodosAusentes = document.getElementById("marcar-todos-ausentes");
+        const btnMarcarTodosTarde = document.getElementById("marcar-todos-tarde");
 
-        document.addEventListener("DOMContentLoaded", function() {
-    const selectMateria = document.getElementById("materia");
-    const tablaEstudiantes = document.getElementById("tabla-estudiantes");
+        // Función para marcar todos los estudiantes
+        function marcarTodos(tipo) {
+            const filas = tablaEstudiantes.getElementsByTagName("tr");
 
+            for (let fila of filas) {
+                const checkboxPresente = fila.querySelector(`input[value="presente"]`);
+                const checkboxAusente = fila.querySelector(`input[value="ausente"]`);
+                const checkboxTarde = fila.querySelector(`input[value="tarde"]`);
 
-    selectMateria.addEventListener("change", function() {
-        const materiaSeleccionada = this.value;
+                if (checkboxPresente && checkboxAusente && checkboxTarde) {
+                    // Primero, desmarcar todas las opciones
+                    checkboxPresente.checked = false;
+                    checkboxAusente.checked = false;
+                    checkboxTarde.checked = false;
 
-
-        // Simula la carga de estudiantes según la materia seleccionada (investigar solicitud AJAX real)
-        const estudiantes = <?php echo json_encode($estudiante); ?>;
-
-
-        // Limpia la tabla antes de agregar nuevos datos
-        tablaEstudiantes.innerHTML = "";
-
-
-        estudiantes.forEach(est => {
-            // Crea una fila para cada estudiante
-            const row = document.createElement("tr");
-
-
-            // Crea columnas para el DNI y Nombre
-            const cellDNI = document.createElement("td");
-            cellDNI.textContent = est.dni_estudiante;
-
-
-            const cellNombre = document.createElement("td");
-            cellNombre.textContent = est.nombres;
-
-
-            // Columna Presente
-            const cellPresente = document.createElement("td");
-            const inputPresente = document.createElement("input");
-            inputPresente.type = "checkbox";
-            inputPresente.name = `asistencia_${est.dni_estudiante}`;
-            inputPresente.value = "presente";
-            inputPresente.id = `presente_${est.dni_estudiante}`;
-            const labelPresente = document.createElement("label");
-            labelPresente.htmlFor = inputPresente.id;
-            labelPresente.textContent = "Presente";
-            cellPresente.appendChild(inputPresente);
-            cellPresente.appendChild(labelPresente);
-
-
-            // Columna Ausente
-            const cellAusente = document.createElement("td");
-            const inputAusente = document.createElement("input");
-            inputAusente.type = "checkbox";
-            inputAusente.name = `asistencia_${est.dni_estudiante}`;
-            inputAusente.value = "ausente";
-            inputAusente.id = `ausente_${est.dni_estudiante}`;
-            const labelAusente = document.createElement("label");
-            labelAusente.htmlFor = inputAusente.id;
-            labelAusente.textContent = "Ausente";
-            cellAusente.appendChild(inputAusente);
-            cellAusente.appendChild(labelAusente);
-
-
-            // Columna Tarde
-            const cellTarde = document.createElement("td");
-            const inputTarde = document.createElement("input");
-            inputTarde.type = "checkbox";
-            inputTarde.name = `asistencia_${est.dni_estudiante}`;
-            inputTarde.value = "tarde";
-            inputTarde.id = `tarde_${est.dni_estudiante}`;
-            const labelTarde = document.createElement("label");
-            labelTarde.htmlFor = inputTarde.id;
-            labelTarde.textContent = "Tarde";
-            cellTarde.appendChild(inputTarde);
-            cellTarde.appendChild(labelTarde);
-
-
-            // "Event listener" para que sólo una opción sea seleccionada por estudiante
-            inputPresente.addEventListener("change", function() {
-                if (this.checked) {
-                    inputAusente.checked = false;
-                    inputTarde.checked = false;
+                    // Luego, marcar la opción seleccionada
+                    if (tipo === 'presente') {
+                        checkboxPresente.checked = true;
+                    } else if (tipo === 'ausente') {
+                        checkboxAusente.checked = true;
+                    } else if (tipo === 'tarde') {
+                        checkboxTarde.checked = true;
+                    }
                 }
-            });
+            }
+        }
 
+        // Asignar eventos a los botones
+        btnMarcarTodosPresentes.addEventListener("click", function() {
+            marcarTodos('presente');
+        });
 
-            inputAusente.addEventListener("change", function() {
-                if (this.checked) {
-                    inputPresente.checked = false;
-                    inputTarde.checked = false;
-                }
-            });
+        btnMarcarTodosAusentes.addEventListener("click", function() {
+            marcarTodos('ausente');
+        });
 
-
-            inputTarde.addEventListener("change", function() {
-                if (this.checked) {
-                    inputPresente.checked = false;
-                    inputAusente.checked = false;
-                }
-            });
-
-
-            // Agrega columnas a la fila
-            row.appendChild(cellDNI);
-            row.appendChild(cellNombre);
-            row.appendChild(cellPresente);
-            row.appendChild(cellAusente);
-            row.appendChild(cellTarde);
-
-
-            // Agrega la fila a la tabla
-            tablaEstudiantes.appendChild(row);
+        btnMarcarTodosTarde.addEventListener("click", function() {
+            marcarTodos('tarde');
         });
     });
-});
-    </script>
-
-</body>
-</html>
+</script>
