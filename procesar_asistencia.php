@@ -12,42 +12,43 @@ $id_materia = $_POST['id_materia'];
 $denominacion_materia = $_POST['denominacion_materia'];
 
 // Variable para contar asistencias guardadas
-$asistencias_guardadas = 0;
-$errores = [];
+$asistencias_guardadas = 0; // Contador que aumenta cuando se guardan las asistencias
+$errores = []; // Vector que almacena los mensajes de error
 
 // Procesa la asistencia de los estudiantes
-foreach ($_POST as $key => $value) {
-    if (strpos($key, 'asistencia_') !== false) {
+foreach ($_POST as $key => $value) { // Recorre las clave-valor enviadas desde el formulario. Busca claves que empiecen con "asistencia_"
+    if (strpos($key, 'asistencia_') !== false) { // Verifica si la clave contiene "asistencia_"
         // Extraer el DNI del estudiante desde el campo 'asistencia'
         $dni_estudiante = str_replace('asistencia_', '', $key);
         
-        // Obtener el nombre del estudiante usando el DNI
+        // Obtiene el nombre del estudiante usando el DNI
         $sql_estudiante = "SELECT nombres FROM ESTUDIANTES WHERE dni_estudiante = ?";
-        $stmt_estudiante = $conn->prepare($sql_estudiante);
+        $stmt_estudiante = $conn->prepare($sql_estudiante); // Prepara la consulta para evitar inyecciones SQL
         
         if ($stmt_estudiante) {
-            $stmt_estudiante->bind_param('s', $dni_estudiante);
-            $stmt_estudiante->execute();
-            $result_estudiante = $stmt_estudiante->get_result();
-            $estudiante = $result_estudiante->fetch_assoc();
+            $stmt_estudiante->bind_param('s', $dni_estudiante); // Vincula el parámetro de la consulta con el valor del DNI del estudiante.
+            $stmt_estudiante->execute(); // Ejecuta la consulta
+            $result_estudiante = $stmt_estudiante->get_result(); // Obtiene el resultado de la consulta
+            $estudiante = $result_estudiante->fetch_assoc(); // Obtiene una fila del resultasdo como un vector asociatio
             
-            // Verifica si se encontró el estudiante
+            // Verifica si existe el estudiante
             if ($estudiante) {
                 $nombres = $estudiante['nombres'];
                 $tipo_asistencia = $value; 
 
                 // Guarda la asistencia en la base de datos
                 $sql_insert = "INSERT INTO ASISTENCIAS (ciclo_lectivo, carrera, fecha, id_docente, nombre_apellido, tipo_asistencia, id_materia, denominacion_materia, nombres, dni_estudiante) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // Consulta que inserta filas en la tabla "SISTENCIAS" con los datos proporcionados
                 $stmt_insert = $conn->prepare($sql_insert);
                 
                 if ($stmt_insert) {
-                    $stmt_insert->bind_param('ssssssssss', $ciclo_lectivo, $carrera, $fecha, $id_docente, $nombre_apellido, $tipo_asistencia, $id_materia, $denominacion_materia, $nombres, $dni_estudiante);
+                    // Vincula los parámetros con los valores correspondientes. Las "s" indican que se trata de un string, las "i" un entero (revisar si se debe retornar todo a S)
+                    $stmt_insert->bind_param('sssississi', $ciclo_lectivo, $carrera, $fecha, $id_docente, $nombre_apellido, $tipo_asistencia, $id_materia, $denominacion_materia, $nombres, $dni_estudiante); 
 
-                    // Ejecuta la inserción
+                    // Ejecuta la inserción en la base de datos
                     if ($stmt_insert->execute()) {
-                        $asistencias_guardadas++;
-                    } else {
+                        $asistencias_guardadas++; // Si hay éxito incrementa el contador
+                    } else { // Si no hay éxito guarda un mensaje en el vector
                         $errores[] = "Error al guardar la asistencia para el estudiante $nombres (DNI: $dni_estudiante). Error: " . $stmt_insert->error;
                     }
                 } else {
