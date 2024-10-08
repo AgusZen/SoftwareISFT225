@@ -1,4 +1,10 @@
 <?php
+
+/* Debugging: Verificar los datos que llegan a través del formulario
+echo "<pre>";
+print_r($_POST); // Muestra todo lo que llega por el formulario
+echo "</pre>"; */
+
 // Conexión a la base de datos
 require('./conexion.php');
 
@@ -6,9 +12,9 @@ require('./conexion.php');
 $ciclo_lectivo = $_POST['ciclo_lectivo'];
 $carrera = $_POST['carrera'];
 $fecha = $_POST['fecha'];
-$id_docente = $_POST['id_docente'];
+$id_docente = $_POST['docente'];
 $nombre_apellido = $_POST['nombre_apellido'];
-$id_materia = $_POST['id_materia'];
+$id_materia = $_POST['materia'];
 $denominacion_materia = $_POST['denominacion_materia'];
 $asistencias = $_POST['asistencia']; // Este es un arreglo
 
@@ -38,7 +44,7 @@ try {
     // Iterar sobre las asistencias
     foreach ($asistencias as $dni_estudiante => $tipo_asistencia) {
         // Validar el tipo de asistencia
-        $tipos_validos = ['presente', 'ausente', 'tarde'];
+        $tipos_validos = ['Presente', 'Ausente', 'Tarde'];
         if (!in_array($tipo_asistencia, $tipos_validos)) {
             $errores[] = "Tipo de asistencia inválido para el estudiante con DNI $dni_estudiante.";
             continue;

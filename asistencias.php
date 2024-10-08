@@ -40,11 +40,12 @@
         $conn->close(); // Cierra la conexión siempre
     }
 
-    // Asegurarse de que las variables ocultas están definidas
-    $id_docente = isset($id_docente) ? htmlspecialchars($id_docente) : '';
-    $nombre_apellido = isset($nombre_apellido) ? htmlspecialchars($nombre_apellido) : '';
-    $id_materia = isset($id_materia) ? htmlspecialchars($id_materia) : '';
-    $denominacion_materia = isset($denominacion_materia) ? htmlspecialchars($denominacion_materia) : '';
+    $id_docente = isset($_POST['docente']) ? $_POST['docente'] : '';
+    $nombre_apellido = isset($_POST['nombre_apellido']) ? $_POST['nombre_apellido'] : '';
+    $id_materia = isset($_POST['materia']) ? $_POST['materia'] : '';
+    $denominacion_materia = isset($_POST['denominacion_materia']) ? $_POST['denominacion_materia'] : '';
+
+    
     ?>
 
     <main>
@@ -56,7 +57,7 @@
 
                     <!-- Mensajes de error o éxito -->
                     <?php if (isset($mensaje)): ?>
-                        <div class="alert alert-danger"><?php echo htmlspecialchars($mensaje); ?></div>
+                        <div class="alert alert-danger"><?php echo ($mensaje); ?></div>
                     <?php endif; ?>
 
                     <form action="procesar_asistencia.php" method="post" class="needs-validation" novalidate> <!-- Añadido validación Bootstrap -->
@@ -74,8 +75,8 @@
                             <select class="form-select" name="carrera" id="carrera" required>
                                 <option value="">Seleccione una carrera</option>
                                 <?php foreach ($carreras as $carrera): ?>
-                                    <option value="<?php echo htmlspecialchars($carrera['nombre_carrera']); ?>">
-                                        <?php echo htmlspecialchars($carrera['nombre_carrera']); ?>
+                                    <option value="<?php echo ($carrera['nombre_carrera']); ?>">
+                                        <?php echo ($carrera['nombre_carrera']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -89,8 +90,8 @@
                             <select class="form-select" name="curso" id="curso" required>
                                 <option value="">Seleccione un curso</option>
                                 <?php foreach ($cursadas as $cursada): ?>
-                                    <option value="<?php echo htmlspecialchars($cursada['anio']); ?>">
-                                        <?php echo htmlspecialchars($cursada['anio']); ?>
+                                    <option value="<?php echo ($cursada['anio']); ?>">
+                                        <?php echo ($cursada['anio']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -104,8 +105,8 @@
                             <select class="form-select" name="materia" id="materia" required>
                                 <option value="">Seleccione una materia</option>
                                 <?php foreach ($materias as $materia): ?>
-                                    <option value="<?php echo htmlspecialchars($materia['id_materia']); ?>">
-                                        <?php echo htmlspecialchars($materia['denominacion_materia']); ?>
+                                    <option value="<?php echo ($materia['id_materia']); ?>">
+                                        <?php echo ($materia['denominacion_materia']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -119,8 +120,8 @@
                             <select class="form-select" name="docente" id="profesor" required>
                                 <option value="">Seleccione un profesor</option>
                                 <?php foreach ($docentes as $docente): ?>
-                                    <option value="<?php echo htmlspecialchars($docente['id_docente']); ?>">
-                                        <?php echo htmlspecialchars($docente['nombre_apellido']); ?>
+                                    <option value="<?php echo ($docente['id_docente']); ?>">
+                                        <?php echo ($docente['nombre_apellido']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -167,16 +168,16 @@
                                 <tbody id="tabla-estudiantes-body">
                                     <?php foreach ($estudiantes as $estudiante): ?>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($estudiante['dni_estudiante']); ?></td>
-                                            <td><?php echo htmlspecialchars($estudiante['nombres']); ?></td>
+                                            <td><?php echo ($estudiante['dni_estudiante']); ?></td>
+                                            <td><?php echo ($estudiante['nombres']); ?></td>
                                             <td class="text-center">
-                                                <input type="radio" name="asistencia[<?php echo htmlspecialchars($estudiante['dni_estudiante']); ?>]" value="presente" required>
+                                                <input type="radio" name="asistencia[<?php echo ($estudiante['dni_estudiante']); ?>]" value="Presente" required>
                                             </td>
                                             <td class="text-center">
-                                                <input type="radio" name="asistencia[<?php echo htmlspecialchars($estudiante['dni_estudiante']); ?>]" value="ausente">
+                                                <input type="radio" name="asistencia[<?php echo ($estudiante['dni_estudiante']); ?>]" value="Ausente">
                                             </td>
                                             <td class="text-center">
-                                                <input type="radio" name="asistencia[<?php echo htmlspecialchars($estudiante['dni_estudiante']); ?>]" value="tarde">
+                                                <input type="radio" name="asistencia[<?php echo ($estudiante['dni_estudiante']); ?>]" value="Tarde">
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -231,15 +232,15 @@
                     <td>${est.dni_estudiante}</td>
                     <td>${est.nombres}</td>
                     <td class="text-center">
-                        <input type="radio" name="asistencia[${est.dni_estudiante}]" value="presente" id="presente_${est.dni_estudiante}" required>
+                        <input type="radio" name="asistencia[${est.dni_estudiante}]" value="Presente" id="presente_${est.dni_estudiante}" required>
                         <label for="presente_${est.dni_estudiante}">Presente</label>
                     </td>
                     <td class="text-center">
-                        <input type="radio" name="asistencia[${est.dni_estudiante}]" value="ausente" id="ausente_${est.dni_estudiante}">
+                        <input type="radio" name="asistencia[${est.dni_estudiante}]" value="Ausente" id="ausente_${est.dni_estudiante}">
                         <label for="ausente_${est.dni_estudiante}">Ausente</label>
                     </td>
                     <td class="text-center">
-                        <input type="radio" name="asistencia[${est.dni_estudiante}]" value="tarde" id="tarde_${est.dni_estudiante}">
+                        <input type="radio" name="asistencia[${est.dni_estudiante}]" value="Tarde" id="tarde_${est.dni_estudiante}">
                         <label for="tarde_${est.dni_estudiante}">Tarde</label>
                     </td>
                 </tr>
@@ -278,9 +279,9 @@
         };
 
         // Asignar eventos a los botones
-        btnMarcarTodosPresentes.addEventListener("click", () => marcarTodos('presente'));
-        btnMarcarTodosAusentes.addEventListener("click", () => marcarTodos('ausente'));
-        btnMarcarTodosTarde.addEventListener("click", () => marcarTodos('tarde'));
+        btnMarcarTodosPresentes.addEventListener("click", () => marcarTodos('Presente'));
+        btnMarcarTodosAusentes.addEventListener("click", () => marcarTodos('Ausente'));
+        btnMarcarTodosTarde.addEventListener("click", () => marcarTodos('Tarde'));
 
         // Asignar evento al cambio de materia
         selectMateria.addEventListener("change", (e) => {
