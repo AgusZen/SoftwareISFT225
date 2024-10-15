@@ -13,9 +13,9 @@ $ciclo_lectivo = $_POST['ciclo_lectivo'];
 $carrera = $_POST['carrera'];
 $fecha = $_POST['fecha'];
 $id_docente = $_POST['docente'];
-$nombre_apellido = $_POST['nombre_apellido'];
+$nombre_apellido = '';
 $id_materia = $_POST['materia'];
-$denominacion_materia = $_POST['denominacion_materia'];
+$denominacion_materia = '';
 $asistencias = $_POST['asistencia']; // Este es un arreglo
 
 // Inicializar contadores y errores
@@ -46,7 +46,7 @@ try {
         // Validar el tipo de asistencia
         $tipos_validos = ['Presente', 'Ausente', 'Tarde'];
         if (!in_array($tipo_asistencia, $tipos_validos)) {
-            $errores[] = "Tipo de asistencia inválido para el estudiante con DNI $dni_estudiante.";
+            $errores[] = "Tipo de asistencia inválida el estudiante $nombres (DNI: $dni_estudiante)";
             continue;
         }
 
@@ -112,5 +112,5 @@ $conn->close();
 if (empty($errores)) {
     header("refresh:2; url=asistencias.php");
     exit;
-}
+} 
 ?>

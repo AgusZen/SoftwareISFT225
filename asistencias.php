@@ -13,39 +13,39 @@
     require('./conexion.php'); // Incluye el archivo de la conexión a la base de datos
     include "header.php"; // Incluye el archivo del header principal
 
-    function obtenerDatos($conn, $sql) {
-        $result = $conn->query($sql);
-        if ($result) {
-            return $result->fetch_all(MYSQLI_ASSOC);
+    function traerDatos($conn, $sql) {
+        $result = $conn->query($sql); // Ejecuta la consulta
+        if ($result) { // Verifica 
+            return $result->fetch_all(MYSQLI_ASSOC); // Devuelve resultados
         } else {
-            throw new Exception("Error en la consulta SQL: " . $conn->error);
+            throw new Exception("Error en la consulta SQL: " . $conn->error); // Si falla la consulta
         }
     }
 
-    try {
-        if (!$conn) {
+    try { // Estructura de manejo de errores
+        if (!$conn) { // Si la conexión no se establece
             throw new Exception("Error en la conexión a la base de datos");
         }
-
-        $carreras = obtenerDatos($conn, "SELECT nombre_carrera FROM CARRERA");
-        $cursadas = obtenerDatos($conn, "SELECT anio FROM CURSADA");
-        $materias = obtenerDatos($conn, "SELECT id_materia, denominacion_materia FROM MATERIA");
-        $docentes = obtenerDatos($conn, "SELECT id_docente, nombre_apellido FROM DOCENTE");
-        $estudiantes = obtenerDatos($conn, "SELECT dni_estudiante, nombres FROM ESTUDIANTES");
+        // Obtención de datos provenientes de las respectivas tablas a través de la función "traerDatos"
+        $carreras = traerDatos($conn, "SELECT nombre_carrera FROM CARRERA");
+        $cursadas = traerDatos($conn, "SELECT anio FROM CURSADA");
+        $materias = traerDatos($conn, "SELECT id_materia, denominacion_materia FROM MATERIA");
+        $docentes = traerDatos($conn, "SELECT id_docente, nombre_apellido FROM DOCENTE");
+        $estudiantes = traerDatos($conn, "SELECT dni_estudiante, nombres FROM ESTUDIANTES");
 
     } catch (Exception $e) {
-        $mensaje = $e->getMessage();
+        $mensaje = $e->getMessage(); // Obtiene el mensaje de error y lo muestra con Bootstrap
         echo "<div class='alert alert-danger'>$mensaje</div>";
-    } finally {
-        $conn->close(); // Cierra la conexión siempre
+    } finally { // Cierra la conexión
+        $conn->close();  
     }
 
+    // Obtiene valores enviados por medio de POST. Si no llegan, muestra una cadena vacía. (Todavía sin resolver del todo)
     $id_docente = isset($_POST['docente']) ? $_POST['docente'] : '';
     $nombre_apellido = isset($_POST['nombre_apellido']) ? $_POST['nombre_apellido'] : '';
     $id_materia = isset($_POST['materia']) ? $_POST['materia'] : '';
     $denominacion_materia = isset($_POST['denominacion_materia']) ? $_POST['denominacion_materia'] : '';
 
-    
     ?>
 
     <main>
@@ -55,28 +55,23 @@
                 <div class="d-block p-3 m-4 h-100">
                     <h2 class="card-footer-text mt-2 mb-5 p-2">Asistencias</h2>
 
-                    <!-- Mensajes de error o éxito -->
-                    <?php if (isset($mensaje)): ?>
-                        <div class="alert alert-danger"><?php echo ($mensaje); ?></div>
-                    <?php endif; ?>
-
-                    <form action="procesar_asistencia.php" method="post" class="needs-validation" novalidate> <!-- Añadido validación Bootstrap -->
+                    <form action="procesar_asistencia.php" method="post" class="needs-validation" novalidate> <!-- El formulario envía los datos a procesar_asistencia.php por medio de POST. Inclue validación de Bootstrap-->
 
                         <div class="mb-3">
-                            <label for="ciclo_lectivo" class="form-label">Ciclo Lectivo</label>
-                            <input type="text" class="form-control" id="ciclo_lectivo" name="ciclo_lectivo" required readonly>
-                            <div class="invalid-feedback">
+                            <label for="ciclo_lectivo" class="form-label">Ciclo Lectivo</label> <!-- Texto del campo -->
+                            <input type="text" class="form-control" id="ciclo_lectivo" name="ciclo_lectivo" required readonly> <!-- Identificadores del campo -->
+                            <div class="invalid-feedback"> <!-- Mensaje de error en la validación -->
                                 Por favor, ingrese el ciclo lectivo.
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="carrera" class="form-label">Carrera</label>
-                            <select class="form-select" name="carrera" id="carrera" required>
-                                <option value="">Seleccione una carrera</option>
-                                <?php foreach ($carreras as $carrera): ?>
-                                    <option value="<?php echo ($carrera['nombre_carrera']); ?>">
-                                        <?php echo ($carrera['nombre_carrera']); ?>
+                            <label for="carrera" class="form-label">Carrera</label> <!-- Etiqueta para el campo -->
+                            <select class="form-select" name="carrera" id="carrera" required> <!-- Lista desplegable para el campo e identificadores de campo -->
+                                <option value="">Seleccione una carrera</option> 
+                                <?php foreach ($carreras as $carrera): ?> <!-- Itera sobre el vector "carreras" obtenido de la base de datos y crea una opción por cada carrera -->
+                                    <option value="<?php echo ($carrera['nombre_carrera']); ?>"> <!-- Valor de la opción -->
+                                        <?php echo ($carrera['nombre_carrera']); ?> <!-- Texto que muestra -->
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -132,13 +127,14 @@
 
                         <div class="mb-3">
                             <label for="fecha" class="form-label">Fecha</label>
-                            <input type="date" class="form-control" id="fecha" name="fecha" required>
+                            <input type="date" class="form-control" id="fecha" name="fecha" required> <!-- Selecciona fecha a través de calendario -->
                             <div class="invalid-feedback">
                                 Por favor, seleccione una fecha.
                             </div>
                         </div>
 
-                        <!-- Campos ocultos -->
+                        <!-- Campos ocultos, se envían con el formulario. ¿Está funcionando? -->
+
                         <input type="hidden" name="id_docente" value="<?php echo $id_docente; ?>">
                         <input type="hidden" name="nombre_apellido" value="<?php echo $nombre_apellido; ?>">
                         <input type="hidden" name="id_materia" value="<?php echo $id_materia; ?>">
@@ -148,15 +144,15 @@
                         <div class="mb-3">
                             <label for="estudiantes" class="form-label">Estudiantes</label>
 
-                            <!-- Botones para marcar todos -->
+                            <!-- Botones para "marcar todos" con estilización -->
                             <div class="d-flex justify-content-end mb-2 gap-2">
-                                <button type="button" id="marcar-todos-presentes" class="btn btn-sm btn-outline-success">Presentes (T)</button>
-                                <button type="button" id="marcar-todos-ausentes" class="btn btn-sm btn-outline-danger">Ausentes (T)</button>
-                                <button type="button" id="marcar-todos-tarde" class="btn btn-sm btn-outline-warning">Tardes (T)</button>
+                                <button type="button" id="marcar-todos-presentes" class="btn btn-sm btn-outline-success">Presentes(T)</button>
+                                <button type="button" id="marcar-todos-ausentes" class="btn btn-sm btn-outline-danger">Ausentes(T)</button>
+                                <button type="button" id="marcar-todos-tarde" class="btn btn-sm btn-outline-warning">Tardes(T)</button>
                             </div> 
 
-                            <table class="table table-bordered table-hover table-responsive d-none" id="tabla-estudiantes">
-                                <thead class="table-light">
+                            <table class="table table-bordered table-hover table-responsive d-none" id="tabla-estudiantes"> <!-- Clase básica de una tabla con agregados como bordes, filas resaltadas con el cursor, responsive y ocultamiento inicial -->
+                                <thead class="table-light"> <!-- Define las columnas -->
                                     <tr>
                                         <th>DNI</th>
                                         <th>Nombre</th>
@@ -166,13 +162,13 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tabla-estudiantes-body">
-                                    <?php foreach ($estudiantes as $estudiante): ?>
+                                    <?php foreach ($estudiantes as $estudiante): ?> <!-- Itera sobre cada estudiante para crea una fila -->
                                         <tr>
-                                            <td><?php echo ($estudiante['dni_estudiante']); ?></td>
-                                            <td><?php echo ($estudiante['nombres']); ?></td>
-                                            <td class="text-center">
+                                            <td><?php echo ($estudiante['dni_estudiante']); ?></td> <!-- Muestra DNI -->
+                                            <td><?php echo ($estudiante['nombres']); ?></td> <!-- Muestra nombre -->
+                                            <td class="text-center"> <!-- Opciones para marcar presente, ausente o tarde -->
                                                 <input type="radio" name="asistencia[<?php echo ($estudiante['dni_estudiante']); ?>]" value="Presente" required>
-                                            </td>
+                                            </td>                                               <!-- Agrupa asistencias por DNI -->
                                             <td class="text-center">
                                                 <input type="radio" name="asistencia[<?php echo ($estudiante['dni_estudiante']); ?>]" value="Ausente">
                                             </td>
@@ -198,8 +194,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 
     <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        // Cacheo de elementos del DOM
+    document.addEventListener("DOMContentLoaded", () => { // El script se ejecuta una vez que todo el contenido del DOM fue cargado
+        // Cacheo de elementos del DOM. (Almacena referencias a elementos específicos para usarlos sin tener que buscarlos todo el tiempo)
         const cicloLectivoInput = document.getElementById("ciclo_lectivo");
         const selectMateria = document.getElementById("materia");
         const tablaEstudiantes = document.getElementById("tabla-estudiantes");
@@ -210,23 +206,23 @@
 
         // Establecer el ciclo lectivo automáticamente
         const establecerCicloLectivo = () => {
-            const fecha = new Date();
-            const year = fecha.getFullYear();
-            cicloLectivoInput.value = `${year} - ${year + 1}`;
+            const fecha = new Date(); // Obtiene la fecha
+            const year = fecha.getFullYear(); // Extrae el año
+            cicloLectivoInput.value = `${year}`; // Asigna el valor
         };
 
-        // Función para ocultar la tabla
+        // Función para ocultar la tabla. Añade la clase "d-none"
         const ocultarTablaEstudiantes = () => {
             tablaEstudiantes.classList.add('d-none'); // Añadir clase d-none para ocultar la tabla
         };
 
-        // Función para mostrar la tabla
+        // Función para mostrar la tabla. Borra la clase "d-none"
         const mostrarTablaEstudiantes = () => {
             tablaEstudiantes.classList.remove('d-none'); // Quitar clase d-none para mostrar la tabla
         };
 
         // Función para crear una fila de estudiante usando Template Literals
-        const crearFilaEstudiante = (est) => {
+        const crearFilaEstudiante = (est) => { // "est" contiene los datos del estudiante
             return `
                 <tr>
                     <td>${est.dni_estudiante}</td>
@@ -251,9 +247,9 @@
         const cargarEstudiantes = (materiaSeleccionada) => {
             const estudiantes = <?php echo json_encode($estudiantes); ?>;
 
-            limpiarTablaEstudiantes();
+            limpiarTablaEstudiantes(); // Limpia contenido previo de la tabla
 
-            if (estudiantes.length === 0) {
+            if (estudiantes.length === 0) { // Si no hay estudiantes, hay mensaje de que no se encontraron y oculta la tabla
                 tablaEstudiantesBody.innerHTML = "<tr><td colspan='5' class='text-center'>No se encontraron estudiantes.</td></tr>";
                 ocultarTablaEstudiantes();
                 return;
@@ -261,35 +257,35 @@
 
             mostrarTablaEstudiantes(); // Mostrar la tabla si hay estudiantes
 
-            const filasHTML = estudiantes.map(est => crearFilaEstudiante(est)).join('');
-            tablaEstudiantesBody.innerHTML = filasHTML;
+            const filasHTML = estudiantes.map(est => crearFilaEstudiante(est)).join(''); // Crea una cadena HTML con las filas de los estudiantes
+            tablaEstudiantesBody.innerHTML = filasHTML; // Inserta las filas en el cuerpo de la tabla
         };
 
         const limpiarTablaEstudiantes = () => {
-            tablaEstudiantesBody.innerHTML = "";
-            ocultarTablaEstudiantes(); // Ocultar la tabla cuando esté vacía
+            tablaEstudiantesBody.innerHTML = ""; // Elimina el contenido HTML de la tabla
+            ocultarTablaEstudiantes(); // Oculta la tabla cuando esté vacía
         };
 
         // Función para marcar todos los estudiantes
         const marcarTodos = (tipo) => {
-            const radios = tablaEstudiantesBody.querySelectorAll(`input[type="radio"][value="${tipo}"]`);
-            radios.forEach(radio => {
+            const radios = tablaEstudiantesBody.querySelectorAll(`input[type="radio"][value="${tipo}"]`); // Selecciona todos los botones de radio que tienen el valor especificado "tipo"
+            radios.forEach(radio => { // Itera sobre cada radio seleccionado y lo marca
                 radio.checked = true;
             });
         };
 
-        // Asignar eventos a los botones
+        // Asignar eventos a los botones. Cuando se hace "click" en alún botón se llama a "marcarTodos" con su respectivo argumento
         btnMarcarTodosPresentes.addEventListener("click", () => marcarTodos('Presente'));
         btnMarcarTodosAusentes.addEventListener("click", () => marcarTodos('Ausente'));
         btnMarcarTodosTarde.addEventListener("click", () => marcarTodos('Tarde'));
 
         // Asignar evento al cambio de materia
         selectMateria.addEventListener("change", (e) => {
-            const materiaSeleccionada = e.target.value;
-            if (materiaSeleccionada) {
+            const materiaSeleccionada = e.target.value; // Obtiene el valor de la materia seleccionada
+            if (materiaSeleccionada) { //Si se selecciona una materia, llama a los estudiantes
                 cargarEstudiantes(materiaSeleccionada);
             } else {
-                limpiarTablaEstudiantes();
+                limpiarTablaEstudiantes(); // Si no hy materia seleccionada, limpia y esconde la tabla
             }
         });
 
