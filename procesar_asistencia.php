@@ -27,14 +27,14 @@ $conn->begin_transaction();
 
 try {
     // Prepara la sentencia para obtener el nombre del estudiante
-    $sql_estudiante = "SELECT nombres FROM ESTUDIANTES WHERE dni_estudiante = ?"; // Consulta SQL para obtener nombre a través de DNI
+    $sql_estudiante = "SELECT nombre FROM ESTUDIANTES WHERE dni_estudiante = ?"; // Consulta SQL para obtener nombre a través de DNI
     $stmt_estudiante = $conn->prepare($sql_estudiante); // Prepara la consulta SQL
     if (!$stmt_estudiante) { // Si la preparación falla, manda mensaje de error
         throw new Exception("Error al preparar la consulta de selección del estudiante: " . $conn->error);
     }
 
     // Prepara la sentencia de inserción
-    $sql_insert = "INSERT INTO ASISTENCIAS (ciclo_lectivo, carrera, fecha, id_docente, nombre_apellido, tipo_asistencia, id_materia, denominacion_materia, nombres, dni_estudiante)  
+    $sql_insert = "INSERT INTO ASISTENCIAS (ciclo_lectivo, carrera, fecha, id_docente, nombre_apellido, tipo_asistencia, id_materia, denominacion_materia, nombre, dni_estudiante)  
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // Consulta para insertar asistencias en la tabla ASISTENCIAS. Igualdad de parámetros con valores
     $stmt_insert = $conn->prepare($sql_insert); // Comprueba la preparación de la consulta. Si falla lanza error
     if (!$stmt_insert) {
@@ -57,7 +57,7 @@ try {
         $estudiante = $result_estudiante->fetch_assoc(); // Recupera una fila del resultado como un vector. Si no se encuentra el alumno, estudiante es nulo.
 
         if ($estudiante) { // Verifica si se encontró un estudiante con el DNI proporcionado
-            $nombres = $estudiante['nombres']; // Si existe, asigna el nombre del estudiante a "nombres" 
+            $nombres = $estudiante['nombre']; // Si existe, asigna el nombre del estudiante a "nombres" 
             
             // Parámetros y asistencia
             $stmt_insert->bind_param( // Vincula los parámetros de la consulta preparada con los valores correspondientes, abajo

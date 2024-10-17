@@ -28,10 +28,10 @@
         }
         // Obtención de datos provenientes de las respectivas tablas a través de la función "traerDatos"
         $carreras = traerDatos($conn, "SELECT nombre_carrera FROM CARRERA");
-        $cursadas = traerDatos($conn, "SELECT anio FROM CURSADA");
+        $cursadas = traerDatos($conn, "SELECT distinct (anio_carrera) FROM MATERIA WHERE id_carrera = id_carrera"); 
         $materias = traerDatos($conn, "SELECT id_materia, denominacion_materia FROM MATERIA");
-        $docentes = traerDatos($conn, "SELECT id_docente, nombre_apellido FROM DOCENTE");
-        $estudiantes = traerDatos($conn, "SELECT dni_estudiante, nombres FROM ESTUDIANTES");
+        $docentes = traerDatos($conn, "SELECT id_personal, rol_personal, nombre_personal, apellido_personal FROM PERSONAL"); 
+        $estudiantes = traerDatos($conn, "SELECT tipo_documento, dni_estudiante, nombre FROM ESTUDIANTES");
 
     } catch (Exception $e) {
         $mensaje = $e->getMessage(); // Obtiene el mensaje de error y lo muestra con Bootstrap
@@ -57,13 +57,13 @@
 
                     <form action="procesar_asistencia.php" method="post" class="needs-validation" novalidate> <!-- El formulario envía los datos a procesar_asistencia.php por medio de POST. Inclue validación de Bootstrap-->
 
-                        <div class="mb-3">
-                            <label for="ciclo_lectivo" class="form-label">Ciclo Lectivo</label> <!-- Texto del campo -->
-                            <input type="text" class="form-control" id="ciclo_lectivo" name="ciclo_lectivo" required readonly> <!-- Identificadores del campo -->
-                            <div class="invalid-feedback"> <!-- Mensaje de error en la validación -->
+                    <!--<div class="mb-3">
+                            <label for="ciclo_lectivo" class="form-label">Ciclo Lectivo</label> <!-- Texto del campo
+                            <input type="text" class="form-control" id="ciclo_lectivo" name="ciclo_lectivo" required readonly> <!-- Identificadores del campo
+                            <div class="invalid-feedback"> <!-- Mensaje de error en la validación 
                                 Por favor, ingrese el ciclo lectivo.
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="mb-3">
                             <label for="carrera" class="form-label">Carrera</label> <!-- Etiqueta para el campo -->
@@ -81,12 +81,12 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="curso" class="form-label">Curso</label>
-                            <select class="form-select" name="curso" id="curso" required>
+                            <label for="materia" class="form-label">Curso</label>
+                            <select class="form-select" name="materia" id="materia" required>
                                 <option value="">Seleccione un curso</option>
-                                <?php foreach ($cursadas as $cursada): ?>
-                                    <option value="<?php echo ($cursada['anio']); ?>">
-                                        <?php echo ($cursada['anio']); ?>
+                                <?php foreach ($cursadas as $materia): ?>
+                                    <option value="<?php echo ($materia['anio_carrera']); ?>">
+                                        <?php echo ($materia['anio_carrera']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -100,7 +100,7 @@
                             <select class="form-select" name="materia" id="materia" required>
                                 <option value="">Seleccione una materia</option>
                                 <?php foreach ($materias as $materia): ?>
-                                    <option value="<?php echo ($materia['id_materia']); ?>">
+                                    <option value="<?php echo ($materia['denominacion_materia']); ?>">
                                         <?php echo ($materia['denominacion_materia']); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -111,12 +111,12 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="profesor" class="form-label">Profesor</label>
-                            <select class="form-select" name="docente" id="profesor" required>
+                            <label for="rol_personal" class="form-label">Profesor</label>
+                            <select class="form-select" name="personal" id="rol_personal" required>
                                 <option value="">Seleccione un profesor</option>
-                                <?php foreach ($docentes as $docente): ?>
-                                    <option value="<?php echo ($docente['id_docente']); ?>">
-                                        <?php echo ($docente['nombre_apellido']); ?>
+                                <?php foreach ($docentes as $personal): ?>
+                                    <option value="<?php echo ($personal['id_personal']); ?>">
+                                        <?php echo ($personal['nombre_personal']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -162,13 +162,20 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tabla-estudiantes-body">
-                                    <?php foreach ($estudiantes as $estudiante): ?> <!-- Itera sobre cada estudiante para crea una fila -->
-                                        <tr>
-                                            <td><?php echo ($estudiante['dni_estudiante']); ?></td> <!-- Muestra DNI -->
-                                            <td><?php echo ($estudiante['nombres']); ?></td> <!-- Muestra nombre -->
-                                            <td class="text-center"> <!-- Opciones para marcar presente, ausente o tarde -->
+                                <?php
+                                if ($estudiantes->num_rows > 0) {
+                                    $dato_estudiante = array();
+                                    while ($row = $estudiantes->fetch_assoc()) {
+                                        $dato_estudiante[] = $row;
+                                    }
+                                    foreach ($dato_estudiante as $estudiante): // Itera sobre cada estudiante para crear una fila 
+                                ?>
+                                        <tr>        
+                                            <td><?php echo ($estudiante['dni_estudiante']); ?></td> 
+                                            <td><?php echo ($estudiante['nombre']); ?></td> 
+                                            <td class="text-center">
                                                 <input type="radio" name="asistencia[<?php echo ($estudiante['dni_estudiante']); ?>]" value="Presente" required>
-                                            </td>                                               <!-- Agrupa asistencias por DNI -->
+                                            </td>
                                             <td class="text-center">
                                                 <input type="radio" name="asistencia[<?php echo ($estudiante['dni_estudiante']); ?>]" value="Ausente">
                                             </td>
@@ -176,7 +183,13 @@
                                                 <input type="radio" name="asistencia[<?php echo ($estudiante['dni_estudiante']); ?>]" value="Tarde">
                                             </td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                <?php 
+                                    endforeach; 
+                                } else {
+                                    echo "<tr><td colspan='5' class='text-center'>No se encontraron estudiantes.</td></tr>";
+                                }
+                                ?>
+                                    
                                 </tbody>
                             </table>
                         </div>
