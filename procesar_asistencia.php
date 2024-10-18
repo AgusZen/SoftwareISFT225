@@ -9,11 +9,11 @@ echo "</pre>"; */
 require('./conexion.php');
 
 // Asignar variables. Se accede a los datos enviados del formulario por medio de POST
-$ciclo_lectivo = $_POST['ciclo_lectivo'];
-$carrera = $_POST['carrera'];
+// $ciclo_lectivo = $_POST['ciclo_lectivo'];
+$carrera =$_POST['nombre_carrera'];
 $fecha = $_POST['fecha'];
 $id_docente = $_POST['docente'];
-$nombre_apellido = $_POST['nombre_apellido'];
+$nombre_personal = $_POST['nombre_personal'];
 $id_materia = $_POST['materia'];
 $denominacion_materia = $_POST['denominacion_materia'];
 $asistencias = $_POST['asistencia']; // Este es un vector
@@ -34,7 +34,7 @@ try {
     }
 
     // Prepara la sentencia de inserción
-    $sql_insert = "INSERT INTO ASISTENCIAS (ciclo_lectivo, carrera, fecha, id_docente, nombre_apellido, tipo_asistencia, id_materia, denominacion_materia, nombre, dni_estudiante)  
+    $sql_insert = "INSERT INTO ASISTENCIAS (ciclo_lectivo, nombre_carrera, fecha, id_docente, nombre_personal, tipo_asistencia, id_materia, denominacion_materia, nombre, dni_estudiante)  
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // Consulta para insertar asistencias en la tabla ASISTENCIAS. Igualdad de parámetros con valores
     $stmt_insert = $conn->prepare($sql_insert); // Comprueba la preparación de la consulta. Si falla lanza error
     if (!$stmt_insert) {
@@ -63,10 +63,10 @@ try {
             $stmt_insert->bind_param( // Vincula los parámetros de la consulta preparada con los valores correspondientes, abajo
                 'sssississi',
                 $ciclo_lectivo,
-                $carrera,
+                $nombre_carrera,
                 $fecha,
                 $id_docente,
-                $nombre_apellido,
+                $nombre_personal,
                 $tipo_asistencia,
                 $id_materia,
                 $denominacion_materia,

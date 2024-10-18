@@ -236,7 +236,7 @@
             return `
                 <tr>
                     <td>${est.dni_estudiante}</td>
-                    <td>${est.nombres}</td>
+                    <td>${est.nombre}</td>
                     <td class="text-center">
                         <input type="radio" name="asistencia[${est.dni_estudiante}]" value="Presente" id="presente_${est.dni_estudiante}" required>
                         <label for="presente_${est.dni_estudiante}">Presente</label>
