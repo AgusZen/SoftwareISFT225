@@ -57,13 +57,13 @@
 
                     <form action="procesar_asistencia.php" method="post" class="needs-validation" novalidate> <!-- El formulario envía los datos a procesar_asistencia.php por medio de POST. Inclue validación de Bootstrap-->
 
-                    <!--<div class="mb-3">
-                            <label for="ciclo_lectivo" class="form-label">Ciclo Lectivo</label> <!-- Texto del campo
-                            <input type="text" class="form-control" id="ciclo_lectivo" name="ciclo_lectivo" required readonly> <!-- Identificadores del campo
-                            <div class="invalid-feedback"> <!-- Mensaje de error en la validación 
+                    <div class="mb-3">
+                            <label for="ciclo_lectivo" class="form-label">Ciclo Lectivo</label> <!-- Texto del campo -->
+                            <input type="text" class="form-control" id="ciclo_lectivo" name="ciclo_lectivo" required readonly> <!-- Identificadores del campo -->
+                            <div class="invalid-feedback"> <!-- Mensaje de error en la validación -->
                                 Por favor, ingrese el ciclo lectivo.
                             </div>
-                        </div> -->
+                        </div> 
 
                         <div class="mb-3">
                             <label for="carrera" class="form-label">Carrera</label> <!-- Etiqueta para el campo -->
@@ -163,12 +163,10 @@
                                 </thead>
                                 <tbody id="tabla-estudiantes-body">
                                 <?php
-                                if ($estudiantes->num_rows > 0) {
-                                    $dato_estudiante = array();
-                                    while ($row = $estudiantes->fetch_assoc()) {
-                                        $dato_estudiante[] = $row;
-                                    }
-                                    foreach ($dato_estudiante as $estudiante): // Itera sobre cada estudiante para crear una fila 
+                                // Verifica si hay estudiantes en el vector utilizando count(), que devuelve el número de elementos
+                                if (count($estudiantes) > 0) {
+                                    $dato_estudiante = array(); // Se define un vector para almacenar los estudiantes
+                                    foreach ($estudiantes as $estudiante): // Itera sobre cada estudiante para crear una fila 
                                 ?>
                                         <tr>        
                                             <td><?php echo ($estudiante['dni_estudiante']); ?></td> 
@@ -188,8 +186,7 @@
                                 } else {
                                     echo "<tr><td colspan='5' class='text-center'>No se encontraron estudiantes.</td></tr>";
                                 }
-                                ?>
-                                    
+                                ?> 
                                 </tbody>
                             </table>
                         </div>
@@ -217,12 +214,12 @@
         const btnMarcarTodosAusentes = document.getElementById("marcar-todos-ausentes");
         const btnMarcarTodosTarde = document.getElementById("marcar-todos-tarde");
 
-        // Establecer el ciclo lectivo automáticamente
+        /* Establecer el ciclo lectivo automáticamente
         const establecerCicloLectivo = () => {
             const fecha = new Date(); // Obtiene la fecha
             const year = fecha.getFullYear(); // Extrae el año
             cicloLectivoInput.value = `${year}`; // Asigna el valor
-        };
+        }; */
 
         // Función para ocultar la tabla. Añade la clase "d-none"
         const ocultarTablaEstudiantes = () => {
