@@ -29,9 +29,9 @@
         // Obtención de datos provenientes de las respectivas tablas a través de la función "traerDatos"
         $carreras = traerDatos($conn, "SELECT nombre_carrera FROM CARRERA");
         $cursadas = traerDatos($conn, "SELECT distinct (anio_carrera) FROM MATERIA WHERE id_carrera = id_carrera"); 
-        $materias = traerDatos($conn, "SELECT id_materia, denominacion_materia FROM MATERIA");
-        $docentes = traerDatos($conn, "SELECT id_personal, rol_personal, nombre_personal, apellido_personal FROM PERSONAL"); 
-        $estudiantes = traerDatos($conn, "SELECT tipo_documento, dni_estudiante, nombre FROM ESTUDIANTES");
+        $materias = traerDatos($conn, "SELECT denominacion_materia FROM MATERIA");
+        $docentes = traerDatos($conn, "SELECT nombre_personal FROM PERSONAL"); 
+        $estudiantes = traerDatos($conn, "SELECT dni_estudiante, nombre FROM ESTUDIANTES");
 
     } catch (Exception $e) {
         $mensaje = $e->getMessage(); // Obtiene el mensaje de error y lo muestra con Bootstrap
@@ -40,12 +40,7 @@
         $conn->close();  
     }
 
-    // Obtiene valores enviados por medio de POST. Si no llegan, muestra una cadena vacía. (Todavía sin resolver del todo)
-    $id_docente = isset($_POST['docente']) ? $_POST['docente'] : '';
-    $nombre_apellido = isset($_POST['nombre_apellido']) ? $_POST['nombre_apellido'] : '';
-    $id_materia = isset($_POST['materia']) ? $_POST['materia'] : '';
-    $denominacion_materia = isset($_POST['denominacion_materia']) ? $_POST['denominacion_materia'] : '';
-
+    
     ?>
 
     <main>
@@ -82,7 +77,7 @@
 
                         <div class="mb-3">
                             <label for="materia" class="form-label">Curso</label>
-                            <select class="form-select" name="materia" id="materia" required>
+                            <select class="form-select" name="curso" id="curso" required>
                                 <option value="">Seleccione un curso</option>
                                 <?php foreach ($cursadas as $materia): ?>
                                     <option value="<?php echo ($materia['anio_carrera']); ?>">
@@ -111,11 +106,11 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="rol_personal" class="form-label">Profesor</label>
-                            <select class="form-select" name="personal" id="rol_personal" required>
+                            <label for="personal" class="form-label">Profesor</label>
+                            <select class="form-select" name="personal" id="personal" required>
                                 <option value="">Seleccione un profesor</option>
                                 <?php foreach ($docentes as $personal): ?>
-                                    <option value="<?php echo ($personal['id_personal']); ?>">
+                                    <option value="<?php echo ($personal['nombre_personal']); ?>"> 
                                         <?php echo ($personal['nombre_personal']); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -125,6 +120,7 @@
                             </div>
                         </div>
 
+
                         <div class="mb-3">
                             <label for="fecha" class="form-label">Fecha</label>
                             <input type="date" class="form-control" id="fecha" name="fecha" required> <!-- Selecciona fecha a través de calendario -->
@@ -133,12 +129,8 @@
                             </div>
                         </div>
 
-                        <!-- Campos ocultos, se envían con el formulario. ¿Está funcionando? -->
+                       
 
-                        <input type="hidden" name="id_docente" value="<?php echo $id_docente; ?>">
-                        <input type="hidden" name="nombre_apellido" value="<?php echo $nombre_apellido; ?>">
-                        <input type="hidden" name="id_materia" value="<?php echo $id_materia; ?>">
-                        <input type="hidden" name="denominacion_materia" value="<?php echo $denominacion_materia; ?>">
 
                         <!-- Tabla de Estudiantes -->
                         <div class="mb-3">
