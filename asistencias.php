@@ -52,12 +52,13 @@
 
         <form class="d-block p-3 m-4 h-100 formulario" name="formulario" method="POST" action="procesar_asistencia.php" class="needs-validation" novalidate>
             <h2 class="card-footer-text mt-2 mb-4 p-2">Asistencias</h2>
+
             <div class='filas'>    
                 <div class="fila">
                     <div class="columna">
                         <label for="nombre_ciclo" class="form-label">Ciclo Lectivo</label>
                         <select id="nombre_ciclo" name="nombre_ciclo" class="form-select" required>
-                            <option hidden>Seleccione un ciclo electivo</option>
+                            <option value="">Seleccione un ciclo electivo</option>
                             <?php while ($row = $result_ciclos->fetch_assoc()): ?>
                                 <option value="<?= $row['nombre_ciclo'] ?>"><?= $row['nombre_ciclo'] ?></option>
                             <?php endwhile; ?>
@@ -70,7 +71,7 @@
                     <div class="columna">
                         <label for="carrera" class="form-label">Carrera</label>
                         <select class="form-select" name="nombre_carrera" id="nombre_carrera" required>
-                            <option hidden>Seleccione una carrera</option> 
+                            <option value="">Seleccione una carrera</option> 
                             <?php foreach ($carreras as $carrera): ?>
                                 <option value="<?php echo ($carrera['nombre_carrera']); ?>">
                                     <?php echo ($carrera['nombre_carrera']); ?>
@@ -83,12 +84,13 @@
                     </div>
                 </div>
             </div>
+
             <div class='filas'>
                 <div class="fila">
                     <div class="columna">
-                        <label for="anio_carrera" class="form-label">Seleccionar Año:</label>
-                        <select id="anio_carrera" name="anio_carrera" class="form-select">
-                            <option hidden>Seleccione un año</option>
+                        <label for="anio_carrera" class="form-label">Año</label>
+                        <select id="anio_carrera" name="anio_carrera" class="form-select" required>
+                            <option value="">Seleccione un año</option>
                             <option value="1">Año 1</option>
                             <option value="2">Año 2</option>
                             <option value="3">Año 3</option>
@@ -97,10 +99,11 @@
                             Por favor, seleccione un curso.
                         </div>
                     </div>
+
                     <div class="columna">
                         <label for="materia" class="form-label">Materia</label>
                         <select class="form-select" name="materia" id="materia" required>
-                            <option hidden>Seleccione una materia</option>
+                            <option value="">Seleccione una materia</option>
                             <?php foreach ($materias as $materia): ?>
                                 <option value="<?php echo ($materia['denominacion_materia']); ?>">
                                     <?php echo ($materia['denominacion_materia']); ?>
@@ -113,12 +116,13 @@
                     </div>
                 </div>
             </div>
+
             <div class='filas'>
                 <div class="fila">
                     <div class="columna">
                         <label for="personal" class="form-label">Profesor</label>
                         <select class="form-select" name="personal" id="personal" required>
-                            <option hidden>Seleccione un profesor</option>
+                            <option value="">Seleccione un profesor</option>
                             <?php foreach ($docentes as $personal): ?>
                                 <option value="<?php echo ($personal['nombre_personal']); ?>"> 
                                     <?php echo ($personal['nombre_personal']); ?>
@@ -129,6 +133,7 @@
                             Por favor, seleccione un profesor.
                         </div>
                     </div>
+
                     <div class="columna">
                         <label for="fecha" class="form-label">Fecha</label>
                         <input type="date" class="form-control" id="fecha" name="fecha" required>
@@ -206,13 +211,17 @@
         const btnMarcarTodosPresentes = document.getElementById("marcar-todos-presentes");
         const btnMarcarTodosAusentes = document.getElementById("marcar-todos-ausentes");
         const btnMarcarTodosTarde = document.getElementById("marcar-todos-tarde");
+        const form = document.querySelector('form');
 
-        /* Establecer el ciclo lectivo automáticamente
-        const establecerCicloLectivo = () => {
-            const fecha = new Date(); // Obtiene la fecha
-            const year = fecha.getFullYear(); // Extrae el año
-            cicloLectivoInput.value = `${year}`; // Asigna el valor
-        }; */
+        // Validación de Bootstrap en el envío del formulario
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();  // Evitar envío del formulario si no es válido
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');  // Añadir la clase para activar los estilos de validación de Bootstrap
+            });
+
 
         // Función para ocultar la tabla. Añade la clase "d-none"
         const ocultarTablaEstudiantes = () => {
