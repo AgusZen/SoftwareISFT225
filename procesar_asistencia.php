@@ -43,4 +43,11 @@ try {
 } finally {
     $conn->close();
 }
+
+// Redirige si no hay errores
+if (empty($errores)) {
+    header("refresh:2; url=asistencias.php");
+    exit;
+} 
+
 ?>
