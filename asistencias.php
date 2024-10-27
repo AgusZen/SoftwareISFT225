@@ -200,106 +200,83 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9IbYyI2ZzyuT3iNUy0XtcmM8l9F4Y5du2vs7X6CRl2H5Yk4Z8/J" crossorigin="anonymous"></script>
 
     <script>
-    document.addEventListener("DOMContentLoaded", () => { // El script se ejecuta una vez que todo el contenido del DOM fue cargado
-        // Cacheo de elementos del DOM. (Almacena referencias a elementos específicos para usarlos sin tener que buscarlos todo el tiempo)
-        const selectMateria = document.getElementById("materia");
-        const tablaEstudiantes = document.getElementById("tabla-estudiantes");
-        const tablaEstudiantesBody = document.getElementById("tabla-estudiantes-body");
-        const btnMarcarTodosPresentes = document.getElementById("marcar-todos-presentes");
-        const btnMarcarTodosAusentes = document.getElementById("marcar-todos-ausentes");
-        const btnMarcarTodosTarde = document.getElementById("marcar-todos-tarde");
-        const form = document.querySelector('form');
+    document.addEventListener("DOMContentLoaded", () => {  // Ejecuta el código cuando todo el DOM esté completamente cargado
+    // Cacheo de elementos del DOM para facilitar su uso sin buscarlos cada vez
+    const selectMateria = document.getElementById("materia"); 
+    const tablaEstudiantes = document.getElementById("tabla-estudiantes");
+    const tablaEstudiantesBody = document.getElementById("tabla-estudiantes-body");
+    const btnMarcarTodosPresentes = document.getElementById("marcar-todos-presentes");
+    const btnMarcarTodosAusentes = document.getElementById("marcar-todos-ausentes");
+    const btnMarcarTodosTarde = document.getElementById("marcar-todos-tarde");
+    const form = document.querySelector('form'); // Referencia al formulario para validación
 
-        // Validación de Bootstrap en el envío del formulario
+        // Validación del formulario con Bootstrap al enviarse
         form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();  // Evitar envío del formulario si no es válido
-                event.stopPropagation();
+            if (!form.checkValidity()) { // Verifica si el formulario es válido
+                event.preventDefault();  // Evita el envío del formulario si no es válido
+                event.stopPropagation(); // Detiene la propagación del evento
             }
-            form.classList.add('was-validated');  // Clase añadida para activar los estilos de validación de Bootstrap
-            });
+            form.classList.add('was-validated'); // Añade clase de validación de Bootstrap para mostrar mensajes
+        });
 
-
-        // Función para ocultar la tabla. Añade la clase "d-none"
-        const ocultarTablaEstudiantes = () => {
-            tablaEstudiantes.classList.add('d-none'); // Añadir clase d-none para ocultar la tabla
+        // Función para mostrar u ocultar la tabla de estudiantes
+        const VisibilidadTabla = (mostrar) => {
+            tablaEstudiantes.classList.toggle('d-none', !mostrar); // Añade o quita la clase d-none para mostrar u ocultar la tabla
         };
 
-        // Función para mostrar la tabla. Borra la clase "d-none"
-        const mostrarTablaEstudiantes = () => {
-            tablaEstudiantes.classList.remove('d-none'); // Quitar clase d-none para mostrar la tabla
-        };
+        // Función que construye el HTML de cada fila de estudiante, con opciones de asistencia (dinamismo)
+        const construirFilaHTML = ({ dni_estudiante, nombre, apellido }) => `
+            <tr>
+                <td>${dni_estudiante}</td> <!-- Mostrar DNI del estudiante -->
+                <td>${nombre}</td> <!-- Mostrar nombre del estudiante -->
+                <td>${apellido}</td> <!-- Mostrar apellido del estudiante -->
+                <td class="text-center">
+                    <input type="radio" name="asistencia[${dni_estudiante}]" value="Presente" id="presente_${dni_estudiante}" required> <!-- Radio de asistencia Presente -->
+                    <label for="presente_${dni_estudiante}">Presente</label>
+                </td>
+                <td class="text-center">
+                    <input type="radio" name="asistencia[${dni_estudiante}]" value="Ausente" id="ausente_${dni_estudiante}"> <!-- Radio de asistencia Ausente -->
+                    <label for="ausente_${dni_estudiante}">Ausente</label>
+                </td>
+                <td class="text-center">
+                    <input type="radio" name="asistencia[${dni_estudiante}]" value="Tarde" id="tarde_${dni_estudiante}"> <!-- Radio de asistencia Tarde -->
+                    <label for="tarde_${dni_estudiante}">Tarde</label>
+                </td>
+            </tr>`;
 
-
-        // Función para crear una fila de estudiante
-        const crearFilaEstudiante = (est) => { // "est" contiene los datos del estudiante
-            return `
-                <tr>
-                    <td>${est.dni_estudiante}</td>
-                    <td>${est.nombre}</td>
-                    <td>${est.apellido}</td>
-                    <td class="text-center">
-                        <input type="radio" name="asistencia[${est.dni_estudiante}]" value="Presente" id="presente_${est.dni_estudiante}" required>
-                        <label for="presente_${est.dni_estudiante}">Presente</label>
-                    </td>
-                    <td class="text-center">
-                        <input type="radio" name="asistencia[${est.dni_estudiante}]" value="Ausente" id="ausente_${est.dni_estudiante}">
-                        <label for="ausente_${est.dni_estudiante}">Ausente</label>
-                    </td>
-                    <td class="text-center">
-                        <input type="radio" name="asistencia[${est.dni_estudiante}]" value="Tarde" id="tarde_${est.dni_estudiante}">
-                        <label for="tarde_${est.dni_estudiante}">Tarde</label>
-                    </td>
-                </tr>
-            `;
-        };
-
-        // Modificar las funciones que cargan estudiantes
+        // Carga de estudiantes según la materia seleccionada
         const cargarEstudiantes = (materiaSeleccionada) => {
-            const estudiantes = <?php echo json_encode($estudiantes); ?>;
-
-            limpiarTablaEstudiantes(); // Limpia contenido previo de la tabla para evitar duplicados
-
-            if (estudiantes.length === 0) { // Si no hay estudiantes, hay mensaje de que no se encontraron y oculta la tabla
-                tablaEstudiantesBody.innerHTML = "<tr><td colspan='5' class='text-center'>No se encontraron estudiantes.</td></tr>";
-                ocultarTablaEstudiantes();
-                return;
-            }
-
-            mostrarTablaEstudiantes(); // Mostrar la tabla si hay estudiantes
-
-            const filasHTML = estudiantes.map(est => crearFilaEstudiante(est)).join(''); // Crea una cadena HTML con las filas de los estudiantes
-            tablaEstudiantesBody.innerHTML = filasHTML; // Inserta las filas en el cuerpo de la tabla
+            const estudiantes = <?php echo json_encode($estudiantes); ?>; // Obtiene datos de estudiantes desde la base de datos
+            tablaEstudiantesBody.innerHTML = estudiantes.length > 0 // Verifica si hay estudiantes para mostrar
+                ? estudiantes.map(construirFilaHTML).join('') // Si hay estudiantes, construye filas con sus datos
+                : "<tr><td colspan='5' class='text-center'>No se encontraron estudiantes.</td></tr>"; // Mensaje si no hay estudiantes
+            VisibilidadTabla(estudiantes.length > 0); // Mostrar u ocultar la tabla según haya o no estudiantes
         };
 
+        // Función para limpiar la tabla de estudiantes
         const limpiarTablaEstudiantes = () => {
-            tablaEstudiantesBody.innerHTML = ""; // Elimina el contenido HTML de la tabla
-            ocultarTablaEstudiantes(); // Oculta la tabla cuando esté vacía
+            tablaEstudiantesBody.innerHTML = ""; // Elimina el contenido de la tabla
+            VisibilidadTabla(false); // Oculta la tabla después de limpiarla
         };
 
-        // Función para marcar todos los estudiantes
+        // Función para marcar todos los estudiantes con un tipo de asistencia específico (Presente, Ausente, Tarde)
         const marcarTodos = (tipo) => {
-            const radios = tablaEstudiantesBody.querySelectorAll(`input[type="radio"][value="${tipo}"]`); // Selecciona todos los botones de radio que tienen el valor especificado "tipo"
-            radios.forEach(radio => { // Itera sobre cada radio seleccionado y lo marca
-                radio.checked = true;
-            });
+            const radios = tablaEstudiantesBody.querySelectorAll(`input[type="radio"][value="${tipo}"]`); // Seleccionar todos los radios que coincidan con el tipo
+            radios.forEach(radio => radio.checked = true); // Marcar cada radio seleccionado
         };
 
-        // Asignar eventos a los botones. Cuando se hace "click" en alún botón se llama a "marcarTodos" con su respectivo argumento
+        // Asigna eventos a los botones para marcar todos los estudiantes con el tipo seleccionado
         btnMarcarTodosPresentes.addEventListener("click", () => marcarTodos('Presente'));
         btnMarcarTodosAusentes.addEventListener("click", () => marcarTodos('Ausente'));
         btnMarcarTodosTarde.addEventListener("click", () => marcarTodos('Tarde'));
 
-        // Asignar evento al cambio de materia
+        // Evento para el cambio de materia en el selector
         selectMateria.addEventListener("change", (e) => {
-            const materiaSeleccionada = e.target.value; // Obtiene el valor de la materia seleccionada
-            if (materiaSeleccionada) { //Si se selecciona una materia, llama a los estudiantes
-                cargarEstudiantes(materiaSeleccionada);
-            } else {
-                limpiarTablaEstudiantes(); // Si no hy materia seleccionada, limpia y esconde la tabla
-            }
+            const materiaSeleccionada = e.target.value; // Obtener el valor de la materia seleccionada
+            materiaSeleccionada ? cargarEstudiantes(materiaSeleccionada) : limpiarTablaEstudiantes(); // Cargar estudiantes o limpiar la tabla
         });
     });
+
     </script>
 </body>
 </html>
